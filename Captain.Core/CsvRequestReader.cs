@@ -7,11 +7,11 @@ namespace Captain.Core
 {
     public class CsvRequestReader : IRequestReader
     {
-        public IEnumerable<TransferRequest> Read(string filePath)
+        private class AlphaBankRequest
         {
-            using var reader = new StreamReader(filePath);
-            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-            return csv.GetRecords<TransferRequest>();
+
         }
+        public IEnumerable<TransferRequest> Read(string filePath) 
+            => new CsvReader(new StreamReader(filePath), CultureInfo.InvariantCulture).GetRecords<TransferRequest>();
     }
 }

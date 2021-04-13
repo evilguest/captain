@@ -2,5 +2,8 @@
 
 namespace Captain.Core
 {
-    public class TransactionScheduler { }
+    public abstract class TransactionScheduler
+    {
+        public abstract IEnumerable<TransferResult> Play(decimal initialBalance, IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule);
+    }
 }

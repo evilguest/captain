@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Captain.Main": {
+      "commandName": "Project",
+      "commandLineArgs": "-f MovementList.csv "
+    }
+  }
+}

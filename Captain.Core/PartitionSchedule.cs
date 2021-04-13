@@ -15,15 +15,8 @@ namespace Captain.Core
             do
             {
                 var start = lastPartitionEnd + GetNextRandomTTFSpan();
-                if (start > _parameters.End)
-                    yield break;
 
                 var duration = GetNextRandomTTRSpan();
-                if (start + duration > _parameters.End)
-                {
-                    yield return (start, _parameters.End - start);
-                    yield break;
-                }
                 lastPartitionEnd = start + duration;
                 yield return (start, duration);
             } while (true);

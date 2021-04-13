@@ -3,16 +3,9 @@ using System.Linq;
 
 namespace Captain.Core
 {
-    public abstract class Scheduler 
-    {
-        public abstract IEnumerable<TransferResult> Play(IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule);
-    }
-
-
-
     public class Evaluator
     {
-        public (double C, double A) EstimateConsistencyAvailability(decimal initialBalance, Scheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations)
+        public (double C, double A) EstimateConsistencyAvailability(decimal initialBalance, TransactionScheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations)
         {
             var reference = history.SingleMachineProcess(initialBalance).ToDictionary(r=>r.TimeStamp);
 
@@ -23,7 +16,7 @@ namespace Captain.Core
             {
                 var partitionSchedule = partitionSchedules.Current;
                 partitionSchedules.MoveNext();
-                var r = scheduler.Play(history, partitionSchedule);
+                var r = scheduler.Play(initialBalance, history, partitionSchedule);
                 c += r.GetConsistency();
                 a += r.GetAvailability(reference);
             }

@@ -1,4 +1,6 @@
 ﻿using System;
+using CsvHelper;
+using CsvHelper.Configuration.Attributes;
 
 namespace Captain.Core
 {
