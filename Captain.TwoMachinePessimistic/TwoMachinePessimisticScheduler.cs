@@ -8,6 +8,12 @@ namespace Captain
     {
         public override IEnumerable<TransferResult> Play(decimal initialBalance, IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule)
         {
+            if (requests is null)
+                throw new ArgumentNullException(nameof(requests));
+
+            if (partitionSchedule is null)
+                throw new ArgumentNullException(nameof(partitionSchedule));
+
             var balance = initialBalance;
             using var requestEnumerator = requests.GetEnumerator();
             using var partitionEnumerator = partitionSchedule.GetPartitions().GetEnumerator();
@@ -22,7 +28,7 @@ namespace Captain
                     if (confirmed)
                         balance += requestEnumerator.Current.Amount;
 
-                    yield return new TransferResult()
+                    yield return new TransferResult(requestEnumerator.Current.Id)
                     {
                         TimeStamp = requestEnumerator.Current.TimeStamp,
                         Amount = requestEnumerator.Current.Amount,
@@ -34,7 +40,7 @@ namespace Captain
                 }
                 while (requestEnumerator.Current.TimeStamp < partitionEnumerator.Current.start + partitionEnumerator.Current.duration) // in partition
                 {
-                    yield return new TransferResult()
+                    yield return new TransferResult(requestEnumerator.Current.Id)
                     {
                         TimeStamp = requestEnumerator.Current.TimeStamp,
                         Amount = requestEnumerator.Current.Amount,

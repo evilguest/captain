@@ -7,10 +7,12 @@ namespace Captain.Core
     {
         private IPartitionScheduleParameters _parameters;
         private Random _r;
+        private int _seed;
         public PartitionSchedule(IPartitionScheduleParameters parameters, int seed)
-            => (_r, _parameters) = (new Random(seed), parameters ?? throw new ArgumentNullException(nameof(parameters)));
+            => (_seed, _parameters) = (seed, parameters ?? throw new ArgumentNullException(nameof(parameters)));
         public IEnumerable<(DateTimeOffset start, TimeSpan duration)> GetPartitions()
         {
+            _r = new Random(_seed);
             var lastPartitionEnd = _parameters.Start;
             do
             {

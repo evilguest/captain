@@ -20,7 +20,6 @@ namespace Captain.Main
             #region Partition Schedule Parameters
             [Option]
             public TimeSpan MTTF { get; set; }
-
             [Option]
             public TimeSpan MTTR { get; set; }
             [Option]
@@ -51,7 +50,11 @@ namespace Captain.Main
 
         private static int RunOptionsAndReturnExitCode(Options opts)
         {
-            var history = new CsvRequestReader().Read(opts.RequestsFileName);
+            var history = (from r in new CsvRequestReader().Read(opts.RequestsFileName)
+                           orderby r.TimeStamp
+                           select r).ToList();
+            if (opts.Start == new DateTimeOffset())
+                opts.Start = history[0].TimeStamp;
             var g = new PartitionScheduleGenerator(opts);
             var _2pess = new TwoMachinePessimisticScheduler();
             var e = new Evaluator();

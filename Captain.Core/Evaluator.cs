@@ -7,20 +7,24 @@ namespace Captain.Core
     {
         public (double C, double A) EstimateConsistencyAvailability(decimal initialBalance, TransactionScheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations)
         {
-            var reference = history.SingleMachineProcess(initialBalance).ToDictionary(r=>r.TimeStamp);
+            var reference = history.SingleMachineProcess(initialBalance).ToDictionary(r=>r.Id);
 
             var partitionSchedules = generator.Schedules.GetEnumerator();
-            var c = 0.0;
-            var a = 0.0;
+            var totalC = 0.0;
+            var totalA = 0.0;
             for (var i = 0; i < iterations; i++)
             {
-                var partitionSchedule = partitionSchedules.Current;
                 partitionSchedules.MoveNext();
-                var r = scheduler.Play(initialBalance, history, partitionSchedule);
-                c += r.GetConsistency();
-                a += r.GetAvailability(reference);
+                var partitionSchedule = partitionSchedules.Current;
+                var r = scheduler.Play(initialBalance, history, partitionSchedule).ToList();
+                double c = r.GetConsistency();
+                totalC += c;
+                double a = r.GetAvailability(reference);
+                totalA += a;
+                double na = partitionSchedule.GetPartitions().GetNetworkAvailability(history.First().TimeStamp, history.Last().TimeStamp);
+                System.Console.WriteLine($"I: {i:3} C: {c:p2} A: {a:p2} A': {na:p2}");
             }
-            return (c / iterations, a / iterations);
+            return (totalC / iterations, totalA / iterations);
         }
     }
 }

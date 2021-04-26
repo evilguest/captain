@@ -14,7 +14,7 @@ namespace Captain.Core
                 var confirm = (balance + r.Amount) >= 0;
                 if (confirm)
                     balance += r.Amount;
-                yield return new TransferResult()
+                yield return new TransferResult(r.Id)
                 {
                     TimeStamp = r.TimeStamp,
                     Amount = r.Amount,
@@ -39,13 +39,13 @@ namespace Captain.Core
 
             return positive / (positive + negative);
         }
-        public static double GetAvailability(this IEnumerable<TransferResult> results, IDictionary<DateTimeOffset, TransferResult> referenceResults)
+        public static double GetAvailability(this IEnumerable<TransferResult> results, IDictionary<string, TransferResult> referenceResults)
         {
             int accepted = 0;
             int rejected = 0;
             foreach(var r in results)
             {
-                if (referenceResults[r.TimeStamp].Confirmed && !r.Confirmed)
+                if (referenceResults[r.Id].Confirmed && !r.Confirmed)
                     rejected++;
                 else
                     accepted++;
@@ -59,8 +59,11 @@ namespace Captain.Core
             var lastPartitionEnd = start;
             foreach (var partition in partitions)
             {
+                if (partition.start > end)
+                    break;
                 on += (partition.start - lastPartitionEnd);
                 off += partition.duration;
+                lastPartitionEnd = partition.start + partition.duration;
             }
             on += (end - lastPartitionEnd);
             return on / (on + off);
