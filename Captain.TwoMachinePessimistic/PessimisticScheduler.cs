@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Captain
 {
-    public class TwoMachinePessimisticScheduler : TransactionScheduler
+    public class PessimisticScheduler : TransactionScheduler
     {
         public override IEnumerable<TransferResult> Play(decimal initialBalance, IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule)
         {

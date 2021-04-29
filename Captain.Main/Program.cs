@@ -56,10 +56,11 @@ namespace Captain.Main
             if (opts.Start == new DateTimeOffset())
                 opts.Start = history[0].TimeStamp;
             var g = new PartitionScheduleGenerator(opts);
-            var _2pess = new TwoMachinePessimisticScheduler();
             var e = new Evaluator();
-            var (c, a) = e.EstimateConsistencyAvailability(opts.InitialBalance, _2pess, history, g, opts.Iterations);
-            Console.WriteLine($"C = {c:p2}, A = {a:p2}");
+            var (c, a, na) = e.EstimateConsistencyAvailability(opts.InitialBalance, new PessimisticScheduler(), history, g, opts.Iterations);
+            Console.WriteLine($"Pessimistic  : C = {c:p2}, A = {a:p2}, NA = {na:p2}");
+            (c, a, na) = e.EstimateConsistencyAvailability(opts.InitialBalance, new OptimisticScheduler(opts.Seed, 20), history, g, opts.Iterations);
+            Console.WriteLine($"Optimistic(3): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
             return 0;
         }
     }

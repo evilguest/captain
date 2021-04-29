@@ -5,9 +5,11 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Core", "Captain.Core\Captain.Core.csproj", "{8ED75158-3AB3-4362-AB72-16652493F2C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.TwoMachinePessimistic", "Captain.TwoMachinePessimistic\Captain.TwoMachinePessimistic.csproj", "{F77560E5-817D-4245-8FCC-DE1B39741A13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Pessimistic", "Captain.TwoMachinePessimistic\Captain.Pessimistic.csproj", "{F77560E5-817D-4245-8FCC-DE1B39741A13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Captain.Main", "Captain.Main\Captain.Main.csproj", "{F16A5CB1-3491-4448-A3F7-8C18132308BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Main", "Captain.Main\Captain.Main.csproj", "{F16A5CB1-3491-4448-A3F7-8C18132308BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Captain.Optimistic", "Captain.TwoMachineOptimistic\Captain.Optimistic.csproj", "{F1C564F0-058D-4E53-8E24-D56FC8A0C770}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{F16A5CB1-3491-4448-A3F7-8C18132308BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F16A5CB1-3491-4448-A3F7-8C18132308BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F16A5CB1-3491-4448-A3F7-8C18132308BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1C564F0-058D-4E53-8E24-D56FC8A0C770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1C564F0-058D-4E53-8E24-D56FC8A0C770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1C564F0-058D-4E53-8E24-D56FC8A0C770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1C564F0-058D-4E53-8E24-D56FC8A0C770}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

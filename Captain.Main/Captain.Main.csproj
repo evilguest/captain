@@ -11,7 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Captain.Core\Captain.Core.csproj" />
-    <ProjectReference Include="..\Captain.TwoMachinePessimistic\Captain.TwoMachinePessimistic.csproj" />
+    <ProjectReference Include="..\Captain.TwoMachineOptimistic\Captain.Optimistic.csproj" />
+    <ProjectReference Include="..\Captain.TwoMachinePessimistic\Captain.Pessimistic.csproj" />
   </ItemGroup>
 
   <ItemGroup>

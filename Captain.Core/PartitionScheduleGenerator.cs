@@ -15,19 +15,19 @@ namespace Captain.Core
     {
         public PartitionScheduleGenerator(IPartitionScheduleParameters parameters)
         {
-            _parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-            _r = new Random(_parameters.Seed);
+            _parameters = parameters
+                          ?? throw new ArgumentNullException(nameof(parameters));
         }
 
-        private readonly Random _r;
         private readonly IPartitionScheduleParameters _parameters;
 
         public IEnumerable<PartitionSchedule> Schedules
         {
             get
             {
+                var r = new Random(_parameters.Seed);
                 while(true)
-                    yield return new PartitionSchedule(_parameters, _r.Next()); 
+                    yield return new PartitionSchedule(_parameters, r.Next()); 
             }
         }
     }
