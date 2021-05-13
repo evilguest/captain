@@ -32,7 +32,7 @@ namespace Captain.Core
         }
         public IEnumerable<TransferRequest> Read(string filePath) => 
             from r in new CsvReader(new StreamReader(filePath), CultureInfo.GetCultureInfoByIetfLanguageTag("ru-Ru")).GetRecords<AlphaBankRequest>()
-            select new TransferRequest() { Id = GetUniqueId(r.ReferenceNo), TimeStamp = r.Date, Amount = r.Charge + r.Withdrawal };
+            select new TransferRequest() { Id = GetUniqueId(r.ReferenceNo), TimeStamp = r.Date, Amount = r.Charge - r.Withdrawal };
 
         private string GetUniqueId(string id) => id switch
         {

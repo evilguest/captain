@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Pessimistic", "Capt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Main", "Captain.Main\Captain.Main.csproj", "{F16A5CB1-3491-4448-A3F7-8C18132308BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Captain.Optimistic", "Captain.TwoMachineOptimistic\Captain.Optimistic.csproj", "{F1C564F0-058D-4E53-8E24-D56FC8A0C770}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Optimistic", "Captain.TwoMachineOptimistic\Captain.Optimistic.csproj", "{F1C564F0-058D-4E53-8E24-D56FC8A0C770}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Captain.Tests", "Captain.Tests\Captain.Tests.csproj", "{74355D31-9322-4274-85E7-2C72F02F1517}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{F1C564F0-058D-4E53-8E24-D56FC8A0C770}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1C564F0-058D-4E53-8E24-D56FC8A0C770}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1C564F0-058D-4E53-8E24-D56FC8A0C770}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74355D31-9322-4274-85E7-2C72F02F1517}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74355D31-9322-4274-85E7-2C72F02F1517}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74355D31-9322-4274-85E7-2C72F02F1517}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74355D31-9322-4274-85E7-2C72F02F1517}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

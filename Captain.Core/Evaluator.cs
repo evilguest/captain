@@ -24,8 +24,9 @@ namespace Captain.Core
                 totalA += a;
                 double na = partitionSchedule.GetPartitions().GetNetworkAvailability(history.First().TimeStamp, history.Last().TimeStamp);
                 totalNA += na;
-                //System.Console.WriteLine($"I: {i:3} C: {c:p2} A: {a:p2} A': {na:p2}");
+                //System.Console.WriteLine($"I: {i:3} C: {c:p2} A: {a:p2} A': {na:p2}. Initial balance: {initialBalance}, final balance: {r.Last().Balance}");
             }
+            System.Console.ReadKey();
             return (totalC / iterations, totalA / iterations, totalNA / iterations);
         }
     }
