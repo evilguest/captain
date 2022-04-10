@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -17,6 +17,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Captain.Core\Captain.Core.csproj" />
+    <ProjectReference Include="..\Captain.Main\Captain.Main.csproj" />
+    <ProjectReference Include="..\Captain.Quorum\Captain.Quorum.csproj" />
+    <ProjectReference Include="..\Captain.Optimistic\Captain.Optimistic.csproj" />
+    <ProjectReference Include="..\Captain.Pessimistic\Captain.Pessimistic.csproj" />
   </ItemGroup>
 
 </Project>
