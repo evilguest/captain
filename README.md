@@ -1,1 +1,1 @@
-# captain [![buildAndTest Actions Status](https://github.com/evilguest/captain/actions/workflows/buildAndTest.yml/badge.svg)](https://github.com/evilguest/captain/actions/workflows/buildAndTest.yml)
+# captain [![buildAndTest Actions Status](https://github.com/evilguest/captain/actions/workflows/buildAndTest.yml/badge.svg)](https://github.com/evilguest/captain/actions/workflows/buildAndTest.yml) [![Coverage Status](https://coveralls.io/repos/github/evilguest/captain/badge.svg?branch=main)](https://coveralls.io/github/evilguest/captain?branch=main)
