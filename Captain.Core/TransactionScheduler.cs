@@ -6,4 +6,6 @@ namespace Captain.Core
     {
         public abstract IEnumerable<TransferResult> Play(decimal initialBalance, IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule);
     }
+
+
 }
