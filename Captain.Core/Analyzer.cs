@@ -45,10 +45,18 @@ namespace Captain.Core
             int rejected = 0;
             foreach(var r in results)
             {
-                if (referenceResults[r.Id].Confirmed && !r.Confirmed)
-                    rejected++;
-                else
+                if (r.Confirmed)
+                {
                     accepted++;
+                    if (!referenceResults[r.Id].Confirmed)
+                        // oops! Inconsistency!!!
+                        continue;
+                }
+                else 
+                { 
+                    if (referenceResults[r.Id].Confirmed)
+                        rejected++;
+                }
             }
             return ((double)accepted / (accepted + rejected));
         }

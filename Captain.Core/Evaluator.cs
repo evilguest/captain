@@ -1,22 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Captain.Core
 {
-    public class Evaluator
+    public static class Evaluator
     {
-        public (double C, double A, double NA) EstimateConsistencyAvailability(decimal initialBalance, TransactionScheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations)
+        public static (double C, double A, double NA) EstimateConsistencyAvailability(decimal initialBalance, TransactionScheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations)
         {
-            var reference = history.SingleMachineProcess(initialBalance).ToDictionary(r=>r.Id);
+            if (scheduler is null)
+                throw new ArgumentNullException(nameof(scheduler));
 
-            var partitionSchedules = generator.Schedules.GetEnumerator();
+            if (history is null)
+                throw new ArgumentNullException(nameof(history));
+
+            if (generator is null)
+                throw new ArgumentNullException(nameof(generator));
+
+            if (!(iterations > 0))
+                throw new ArgumentOutOfRangeException(nameof(iterations), iterations, "Iterations count must be above zero");
+            var count = history.Count();
+            var reference = history.SingleMachineProcess(initialBalance).ToDictionary(r=>r.Id);
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
             var totalC = 0.0;
             var totalA = 0.0;
             var totalNA = 0.0;
-            for (var i = 0; i < iterations; i++)
+            var i = 0;
+            foreach(var partitionSchedule in generator.Schedules)
             {
-                partitionSchedules.MoveNext();
-                var partitionSchedule = partitionSchedules.Current;
+                if (++i > iterations)
+                    break;
+
                 var r = scheduler.Play(initialBalance, history, partitionSchedule).ToList();
                 double c = r.GetConsistency();
                 totalC += c;
@@ -26,7 +42,9 @@ namespace Captain.Core
                 totalNA += na;
                 //System.Console.WriteLine($"I: {i:3} C: {c:p2} A: {a:p2} A': {na:p2}. Initial balance: {initialBalance}, final balance: {r.Last().Balance}");
             }
-            System.Console.ReadKey();
+            sw.Stop();
+            Console.WriteLine($"We run {iterations} of {count} transactions each. Tiotal time: {sw.ElapsedMilliseconds}ms, {1_000_000.0*sw.ElapsedMilliseconds / iterations / count} ns per iteration. ");
+            //System.Console.ReadKey();
             return (totalC / iterations, totalA / iterations, totalNA / iterations);
         }
     }

@@ -3,6 +3,7 @@ using CommandLine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Captain.Core.Evaluator;
 
 namespace Captain.Main
 {
@@ -27,9 +28,14 @@ namespace Captain.Main
 
             [Option]
             public DateTimeOffset Start { get; set; }
-
+            [Option]
             public int Seed { get; set; }
             #endregion
+            [Option('l', "language", Default ="ru-RU")]
+            public string Language { get; set; }
+            [Option('n', "nodes", Default = 2)]
+            public int NodeCount { get; set; } = 2;
+
         }
         static void Main(string[] args)
         {
@@ -50,30 +56,30 @@ namespace Captain.Main
 
         private static int RunOptionsAndReturnExitCode(Options opts)
         {
-            var history = (from r in new CsvRequestReader().Read(opts.RequestsFileName)
+            var history = (from r in new CsvRequestReader().Read(opts.RequestsFileName, opts.Language)
                            select r).Reverse().OrderBy(r=>r.TimeStamp).ToList();
             Console.WriteLine($"Succesfully loaded file {opts.RequestsFileName}");
             Console.WriteLine($"{history.Count} entries found");
             Console.WriteLine($"First entry {history.First().TimeStamp}, last entry {history.Last().TimeStamp}. ");
             Console.WriteLine($"Operations balance {history.Sum(e => e.Amount)}; final balance {opts.InitialBalance+history.Sum(e => e.Amount)}");
-            Console.Read();
+            //Console.Read();
             Console.WriteLine("Checking the single-machine processor consistency...");
             var res = history.SingleMachineProcess(opts.InitialBalance);
             Console.WriteLine($"Operations balance {res.Sum(e => e.Amount)}; final balance {opts.InitialBalance + res.Where(r => r.Confirmed).Sum(e => e.Amount)}");
-            Console.Read();
+            //Console.Read();
             if (opts.Start == new DateTimeOffset())
                 opts.Start = history[0].TimeStamp;
             var g = new PartitionScheduleGenerator(opts);
-            var e = new Evaluator();
             Console.WriteLine($"Running the pessimistic scheduler...");
-            var (c, a, na) = e.EstimateConsistencyAvailability(opts.InitialBalance, new PessimisticScheduler(), history, g, opts.Iterations);
+            var (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new PessimisticScheduler(opts.Seed, opts.NodeCount), history, g, opts.Iterations);
             Console.WriteLine($"Pessimistic  : C = {c:p2}, A = {a:p2}, NA = {na:p2}");
             Console.WriteLine($"Running the optimistic scheduler...");
-            (c, a, na) = e.EstimateConsistencyAvailability(opts.InitialBalance, new OptimisticScheduler(opts.Seed, 2), history, g, opts.Iterations);
-            Console.WriteLine($"Optimistic(20): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
+            (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new OptimisticScheduler(opts.Seed, opts.NodeCount), history, g, opts.Iterations);
+            Console.WriteLine($"Optimistic({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
+
             Console.WriteLine($"Running the splitting scheduler...");
-            (c, a, na) = e.EstimateConsistencyAvailability(opts.InitialBalance, new SplittingScheduler(opts.Seed, 2), history, g, opts.Iterations);
-            Console.WriteLine($"Splitting(2): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
+            (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new SplittingScheduler(opts.Seed, opts.NodeCount), history, g, opts.Iterations);
+            Console.WriteLine($"Splitting({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
             return 0;
         }
     }

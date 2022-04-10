@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace Captain.Core
 {
+    public static class PartitionHelper
+    {
+        public static DateTimeOffset finish(this (DateTimeOffset start, TimeSpan duration) partition) => partition.start + partition.duration;
+    }
     public class PartitionSchedule
     {
         private IPartitionScheduleParameters _parameters;
