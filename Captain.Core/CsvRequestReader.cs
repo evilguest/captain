@@ -13,12 +13,12 @@ namespace Captain.Core
     {
         protected class AlphaBankRequest
         {
-            [Name("Тип счёта")]
-            public string AccountType { get; set; }
+            //[Name("Тип счёта")]
+            //public string AccountType { get; set; }
             [Name("Дата операции")]
             public DateTimeOffset Date{get;set;}
-            [Name("Номер счета")]
-            public string AccountNo { get; set; }
+            //[Name("Номер счета")]
+            //public string AccountNo { get; set; }
             [Name("Референс проводки")]
             public string ReferenceNo { get; set; }
             [Name("Описание операции")]
@@ -27,12 +27,14 @@ namespace Captain.Core
             public decimal Charge { get; set; }
             [Name("Расход")]
             public decimal Withdrawal { get; set; }
-            [Name("Валюта")]
-            public string Currency { get; set; }
+            //[Name("Валюта")]
+            //public string Currency { get; set; }
         }
-        public IEnumerable<TransferRequest> Read(string filePath) => 
-            from r in new CsvReader(new StreamReader(filePath), CultureInfo.GetCultureInfoByIetfLanguageTag("ru-Ru")).GetRecords<AlphaBankRequest>()
-            select new TransferRequest() { Id = GetUniqueId(r.ReferenceNo), TimeStamp = r.Date, Amount = r.Charge - r.Withdrawal };
+        public IEnumerable<TransferRequest> Read(string filePath, string language)
+        {
+            return from r in new CsvReader(new StreamReader(filePath), CultureInfo.GetCultureInfoByIetfLanguageTag(language)).GetRecords<AlphaBankRequest>()
+                   select new TransferRequest() { Id = GetUniqueId(r.ReferenceNo), TimeStamp = r.Date, Amount = r.Charge - r.Withdrawal };
+        }
 
         private string GetUniqueId(string id) => id switch
         {
