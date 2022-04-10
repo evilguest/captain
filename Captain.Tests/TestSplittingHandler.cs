@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Captain.Tests
 {
-    public class TestSplittingScheduler
+    public class TestSplittingHandler
     {
         [Theory]
         [InlineData(1, 1.00)]
@@ -14,7 +14,7 @@ namespace Captain.Tests
         [InlineData(7, 17.8972)]
         public void TestSplit(int machineCount, decimal balance)
         {
-            var s = new SplittingScheduler(42, machineCount);
+            var s = SplittingHandler.Create(42, machineCount, 0);
             var balances = new decimal[machineCount];
             s.DistributeBalances(balance, balances);
             Assert.Equal(balance, balances.Sum());
@@ -27,7 +27,7 @@ namespace Captain.Tests
         [InlineData(8)]
         public void TestCollect(int machineCount)
         {
-            var s = new SplittingScheduler(42, machineCount);
+            var s = SplittingHandler.Create(42, machineCount, 0);
             var balances = new decimal[machineCount];
             var r = new Random(42);
             foreach(ref var b in balances.AsSpan())

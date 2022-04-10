@@ -6,13 +6,14 @@ using System.Linq;
 
 namespace Captain
 {
-    public class SplittingScheduler: MultiNodeSchedulerBase
+    public class SplittingHandler: TransactionHandlerBase
     {
-        public SplittingScheduler(int seed, int machineCount): base(seed, machineCount)
-        {
-        }
+        private SplittingHandler(int seed, int machineCount, decimal initialBalance): base(seed, machineCount, initialBalance) {}
 
-        public override decimal CollectBalances(decimal balance, decimal[] balances) => balances.Sum();
+        public static SplittingHandler Create(int seed, int machineCount, decimal initialBalance) => new SplittingHandler(seed, machineCount, initialBalance);
+
+        public override decimal CollectBalances(decimal balance, decimal[] balances) 
+            => balances.Sum();
 
         public override void DistributeBalances(decimal balance, decimal[] balances)
         {

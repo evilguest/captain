@@ -13,6 +13,7 @@
     <ProjectReference Include="..\Captain.Core\Captain.Core.csproj" />
     <ProjectReference Include="..\Captain.Optimistic\Captain.Optimistic.csproj" />
     <ProjectReference Include="..\Captain.Pessimistic\Captain.Pessimistic.csproj" />
+    <ProjectReference Include="..\Captain.Quorum\Captain.Quorum.csproj" />
   </ItemGroup>
 
   <ItemGroup>

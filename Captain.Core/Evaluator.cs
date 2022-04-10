@@ -6,7 +6,7 @@ namespace Captain.Core
 {
     public static class Evaluator
     {
-        public static (double C, double A, double NA) EstimateConsistencyAvailability(decimal initialBalance, TransactionScheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations)
+        public static (double C, double A, double NA) EstimateConsistencyAvailability(decimal initialBalance, ITransactionScheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations)
         {
             if (scheduler is null)
                 throw new ArgumentNullException(nameof(scheduler));
@@ -43,7 +43,7 @@ namespace Captain.Core
                 //System.Console.WriteLine($"I: {i:3} C: {c:p2} A: {a:p2} A': {na:p2}. Initial balance: {initialBalance}, final balance: {r.Last().Balance}");
             }
             sw.Stop();
-            Console.WriteLine($"We run {iterations} of {count} transactions each. Tiotal time: {sw.ElapsedMilliseconds}ms, {1_000_000.0*sw.ElapsedMilliseconds / iterations / count} ns per iteration. ");
+            Console.WriteLine($"We run {iterations} of {count} transactions each. Total time: {sw.ElapsedMilliseconds}ms, {1_000_000.0*sw.ElapsedMilliseconds / iterations / count} ns per iteration. ");
             //System.Console.ReadKey();
             return (totalC / iterations, totalA / iterations, totalNA / iterations);
         }

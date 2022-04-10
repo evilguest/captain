@@ -6,9 +6,10 @@ using System.Linq;
 
 namespace Captain
 {
-    public class OptimisticScheduler: MultiNodeSchedulerBase
+    public class OptimisticHandler: TransactionHandlerBase
     {
-        public OptimisticScheduler(int seed, int machineCount): base(seed, machineCount){}
+        private OptimisticHandler(int seed, int machineCount, decimal initialBalance): base(seed, machineCount, initialBalance){}
+        public static OptimisticHandler Create(int seed, int machineCount, decimal initialBalance) => new OptimisticHandler(seed, machineCount, initialBalance);
 
         public override decimal CollectBalances(decimal balance, decimal[] balances) => balance + balances.Sum() - balance * balances.Length;
 

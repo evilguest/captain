@@ -71,15 +71,21 @@ namespace Captain.Main
                 opts.Start = history[0].TimeStamp;
             var g = new PartitionScheduleGenerator(opts);
             Console.WriteLine($"Running the pessimistic scheduler...");
-            var (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new PessimisticScheduler(opts.Seed, opts.NodeCount), history, g, opts.Iterations);
+            var pessimistic = new TransactionScheduler(opts.Seed, opts.NodeCount, PessimisticHandler.Create);
+            var (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, pessimistic, history, g, opts.Iterations);
             Console.WriteLine($"Pessimistic  : C = {c:p2}, A = {a:p2}, NA = {na:p2}");
             Console.WriteLine($"Running the optimistic scheduler...");
-            (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new OptimisticScheduler(opts.Seed, opts.NodeCount), history, g, opts.Iterations);
+            (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new TransactionScheduler(opts.Seed, opts.NodeCount, OptimisticHandler.Create), history, g, opts.Iterations);
             Console.WriteLine($"Optimistic({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
 
             Console.WriteLine($"Running the splitting scheduler...");
-            (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new SplittingScheduler(opts.Seed, opts.NodeCount), history, g, opts.Iterations);
+            (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new TransactionScheduler(opts.Seed, opts.NodeCount, SplittingHandler.Create), history, g, opts.Iterations);
             Console.WriteLine($"Splitting({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
+
+            Console.WriteLine($"Running the quorum scheduler...");
+            (c, a, na) = EstimateConsistencyAvailability(opts.InitialBalance, new TransactionScheduler(opts.Seed, opts.NodeCount, QuorumHandler.Create), history, g, opts.Iterations);
+            Console.WriteLine($"Quorum({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
+
             return 0;
         }
     }

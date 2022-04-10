@@ -26,7 +26,7 @@
     <TypeIdentifier />
   </Class>
   <Class Name="Captain.Core.TransactionScheduler" Collapsed="true">
-    <Position X="6.75" Y="0.5" Width="2" />
+    <Position X="6.25" Y="0.5" Width="2" />
     <TypeIdentifier />
   </Class>
   <Class Name="Captain.Core.TransferRequest" Collapsed="true">

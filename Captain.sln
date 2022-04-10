@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Optimistic", "Capta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Tests", "Captain.Tests\Captain.Tests.csproj", "{74355D31-9322-4274-85E7-2C72F02F1517}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Captain.Paxos", "Captain.Quorum\Captain.Quorum.csproj", "{6EB71231-5D3E-42CF-BAA1-5C8F93F0E3A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Captain.Quorum", "Captain.Quorum\Captain.Quorum.csproj", "{6EB71231-5D3E-42CF-BAA1-5C8F93F0E3A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2E56C537-44C6-4C77-AC2F-358F5F62C11F}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
