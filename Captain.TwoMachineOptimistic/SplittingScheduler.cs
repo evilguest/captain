@@ -12,12 +12,19 @@ namespace Captain
         {
         }
 
-        protected override decimal CombineBalances(decimal balance, decimal[] balances) => balances.Sum();
+        public override decimal CollectBalances(decimal balance, decimal[] balances) => balances.Sum();
 
-        protected override void SplitBalances(decimal balance, decimal[] balances)
+        public override void DistributeBalances(decimal balance, decimal[] balances)
         {
-            foreach (ref var b in balances.AsSpan())
-                b = balance/balances.Length; // TODO: round this up to two digits after the point
+            int cents = (int)(balance * 100);
+            var share = cents / balances.Length;
+            var rem = cents % balances.Length;
+            for (int i = 0; i < rem; i++)
+                balances[i] = ((decimal)(share + 1)) / 100;
+            for (int i = rem; i < balances.Length; i++)
+                balances[i] = ((decimal)share) / 100;
+            // now we need to fix up the possible remainder of the cents rounding
+            balances[0] += balance - ((decimal)cents)/100;
         }
     }
 }

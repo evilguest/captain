@@ -10,9 +10,9 @@ namespace Captain
     {
         public OptimisticScheduler(int seed, int machineCount): base(seed, machineCount){}
 
-        protected override decimal CombineBalances(decimal balance, decimal[] balances) => balance + balances.Sum() - balance * balances.Length;
+        public override decimal CollectBalances(decimal balance, decimal[] balances) => balance + balances.Sum() - balance * balances.Length;
 
-        protected override void SplitBalances(decimal balance, decimal[] balances)
+        public override void DistributeBalances(decimal balance, decimal[] balances)
         {
             foreach (ref var b in balances.AsSpan())
                 b = balance; 
