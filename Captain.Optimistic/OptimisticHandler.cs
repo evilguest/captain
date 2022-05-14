@@ -6,17 +6,13 @@ using System.Linq;
 
 namespace Captain
 {
-    public class OptimisticHandler: TransactionHandlerBase
+    public class OptimisticHandler: RequestHandlerBase
     {
-        private OptimisticHandler(int seed, int machineCount, decimal initialBalance): base(seed, machineCount, initialBalance){}
-        public static OptimisticHandler Create(int seed, int machineCount, decimal initialBalance) => new OptimisticHandler(seed, machineCount, initialBalance);
+        private OptimisticHandler(int seed, int machineCount): base(seed, machineCount){}
+        public static OptimisticHandler Create(int seed, int machineCount) => new OptimisticHandler(seed, machineCount);
 
-        public override decimal CollectBalances(decimal balance, decimal[] balances) => balance + balances.Sum() - balance * balances.Length;
+        protected override decimal CollectBalances(decimal balance, decimal[] balances) => balances.CollectDeltas(balance);
 
-        public override void DistributeBalances(decimal balance, decimal[] balances)
-        {
-            foreach (ref var b in balances.AsSpan())
-                b = balance; 
-        }
+        protected override void DistributeBalances(decimal balance, decimal[] balances) => balances.Equalize(balance);
     }
 }

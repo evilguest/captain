@@ -4,17 +4,17 @@ using System.Collections.Generic;
 
 namespace Captain
 {
-    public class PessimisticHandler : TransactionHandlerBase
+    public class PessimisticHandler : RequestHandlerBase
     {
 
-        public PessimisticHandler(int seed, int machineCount, decimal initialBalance) : base(seed, machineCount, initialBalance)
+        public PessimisticHandler(int seed, int machineCount) : base(seed, machineCount)
         {
         }
 
-        public static PessimisticHandler Create(int seed, int machineCount, decimal initialBalance) => new PessimisticHandler(seed, machineCount, initialBalance);
+        public static PessimisticHandler Create(int seed, int machineCount) => new PessimisticHandler(seed, machineCount);
 
-        public override void DistributeBalances(decimal balance, decimal[] balances) => balances[0] = balance;
-        public override decimal CollectBalances(decimal balance, decimal[] balances) => balances[0];
+        protected override void DistributeBalances(decimal balance, decimal[] balances) {}
+        protected override decimal CollectBalances(decimal balance, decimal[] balances) => balance;
         /// <summary>
         /// Handles the request when nodes are partitioned.
         /// This version always rejects the request while nodes can't talk to each other
@@ -22,15 +22,13 @@ namespace Captain
         /// <param name="machine"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public override TransferResult ProcessPartitioned(int machine, TransferRequest request)
-        {
-            return new TransferResult(request.Id)
+        public override TransferResult ProcessPartitioned(int machine, TransferRequest request) 
+         => new TransferResult(request.Id)
             {
                 TimeStamp = request.TimeStamp,
                 Amount = request.Amount,
-                Balance = _nodeBalances[0],
+                //Balance = _balance,
                 Confirmed = false,
             };
-        }
     }
 }

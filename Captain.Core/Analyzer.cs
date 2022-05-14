@@ -6,9 +6,9 @@ namespace Captain.Core
 {
     public static class Analyzer
     {
-        public static IEnumerable<TransferResult> SingleMachineProcess(this IEnumerable<TransferRequest> requests, decimal initialBalance)
+        public static IEnumerable<TransferResult> SingleMachineProcess(this IEnumerable<TransferRequest> requests)
         {
-            var balance = initialBalance;
+            var balance = 0m;
             foreach(var r in requests)
             {
                 var confirm = (balance + r.Amount) >= 0;
@@ -18,18 +18,33 @@ namespace Captain.Core
                 {
                     TimeStamp = r.TimeStamp,
                     Amount = r.Amount,
-                    Balance = balance,
+                    //Balance = balance,
                     Confirmed = confirm
+                };
+            }
+        }
+        public static IEnumerable<TransferResult> UltimateAcceptanceProcess(this IEnumerable<TransferRequest> requests)
+        {
+            var balance = 0m;
+            foreach (var r in requests)
+            {
+                balance += r.Amount;
+                yield return new TransferResult(r.Id)
+                {
+                    TimeStamp = r.TimeStamp,
+                    Amount = r.Amount,
+                    Confirmed = true
                 };
             }
         }
 
         public static double GetConsistency(this IEnumerable<TransferResult> results)
         {
-            TimeSpan positive = new TimeSpan();
-            TimeSpan negative = new TimeSpan();
+            var positive = new TimeSpan();
+            var negative = new TimeSpan();
+            var balance = 0m;
             // we need to count share of the time account was negative
-            foreach(var s in results.Zip(results.Skip(1), (r1, r2)=>(Duration: r2.TimeStamp-r1.TimeStamp, r1.Balance)))
+            foreach(var s in results.Zip(results.Skip(1), (r1, r2)=>(Duration: r2.TimeStamp-r1.TimeStamp, Balance: balance+=r1.Confirmed?r1.Amount:0)))
             {
                 if (s.Balance >= 0)
                     positive += s.Duration;
@@ -39,28 +54,54 @@ namespace Captain.Core
 
             return positive / (positive + negative);
         }
-        public static double GetAvailability(this IEnumerable<TransferResult> results, IDictionary<string, TransferResult> referenceResults)
+        public static double GetAvailability(this IEnumerable<TransferResult> results, IEnumerable<TransferResult> referenceResults)
         {
             int accepted = 0;
             int rejected = 0;
-            foreach(var r in results)
+            foreach (var rr in results.Zip(referenceResults))
             {
-                if (r.Confirmed)
+                if (rr.First.Id != rr.Second.Id)
+                    throw new InvalidOperationException($"Mismatch between results sequence, {rr.First.Id} != {rr.Second.Id}");
+
+                if (rr.First.Confirmed)
                 {
-                    accepted++;
-                    if (!referenceResults[r.Id].Confirmed)
+                    if (rr.Second.Confirmed)
+                        accepted++;
+                    else
                         // oops! Inconsistency!!!
                         continue;
                 }
-                else 
-                { 
-                    if (referenceResults[r.Id].Confirmed)
+                else
+                {
+                    if (rr.Second.Confirmed)
                         rejected++;
                 }
             }
             return ((double)accepted / (accepted + rejected));
         }
-        public static double GetNetworkAvailability(this IEnumerable<(DateTimeOffset start, TimeSpan duration)> partitions, DateTimeOffset start, DateTimeOffset end)
+
+        //public static double GetAvailability(this IEnumerable<TransferResult> results, IDictionary<string, TransferResult> referenceResults)
+        //{
+        //    int accepted = 0;
+        //    int rejected = 0;
+        //    foreach(var r in results)
+        //    {
+        //        if (r.Confirmed)
+        //        {
+        //            accepted++;
+        //            if (!referenceResults[r.Id].Confirmed)
+        //                // oops! Inconsistency!!!
+        //                continue;
+        //        }
+        //        else 
+        //        { 
+        //            if (referenceResults[r.Id].Confirmed)
+        //                rejected++;
+        //        }
+        //    }
+        //    return ((double)accepted / (accepted + rejected));
+        //}
+        public static double GetNetworkAvailability(this IEnumerable<Partition> partitions, DateTimeOffset start, DateTimeOffset end)
         {
             TimeSpan on = new TimeSpan();
             TimeSpan off = new TimeSpan();

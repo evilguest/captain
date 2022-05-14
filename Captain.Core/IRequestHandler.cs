@@ -3,7 +3,7 @@
 
 namespace Captain
 {
-    public interface ITransactionHandler
+    public interface IRequestHandler
     {
         TransferResult ProcessRequest(TransferRequest request);
         void StartPartition();

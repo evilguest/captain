@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Captain.Tests
 {
-    public class TestSplittingHandler
+    public class TestMoneyHelper
     {
         [Theory]
         [InlineData(1, 1.00)]
@@ -12,11 +12,11 @@ namespace Captain.Tests
         [InlineData(3, 17.00)]
         [InlineData(7, 17.89)]
         [InlineData(7, 17.8972)]
-        public void TestSplit(int machineCount, decimal balance)
+        public void TestDistribute(int machineCount, decimal balance)
         {
-            var s = SplittingHandler.Create(42, machineCount, 0);
+//            var s = SplittingHandler.Create(42, machineCount);
             var balances = new decimal[machineCount];
-            s.DistributeBalances(balance, balances);
+            balances.Distribute(balance);
             Assert.Equal(balance, balances.Sum());
         }
         [Theory]
@@ -27,12 +27,11 @@ namespace Captain.Tests
         [InlineData(8)]
         public void TestCollect(int machineCount)
         {
-            var s = SplittingHandler.Create(42, machineCount, 0);
             var balances = new decimal[machineCount];
             var r = new Random(42);
             foreach(ref var b in balances.AsSpan())
                 b = ((decimal)r.Next())/100;
-            Assert.Equal(balances.Sum(), s.CollectBalances(0, balances));
+            Assert.Equal(balances.Sum(), balances.Collect());
         }
     }
 }

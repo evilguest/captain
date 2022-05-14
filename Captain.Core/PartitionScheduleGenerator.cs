@@ -13,11 +13,9 @@ namespace Captain.Core
     }
     public class PartitionScheduleGenerator
     {
-        public PartitionScheduleGenerator(IPartitionScheduleParameters parameters)
-        {
-            _parameters = parameters
+        public PartitionScheduleGenerator(IPartitionScheduleParameters parameters) 
+            => _parameters = parameters
                           ?? throw new ArgumentNullException(nameof(parameters));
-        }
 
         private readonly IPartitionScheduleParameters _parameters;
 

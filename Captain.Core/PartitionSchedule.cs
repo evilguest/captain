@@ -3,46 +3,51 @@ using System.Collections.Generic;
 
 namespace Captain.Core
 {
-    public static class PartitionHelper
+    public record struct Partition(DateTimeOffset start, TimeSpan duration)
     {
-        public static DateTimeOffset finish(this (DateTimeOffset start, TimeSpan duration) partition) => partition.start + partition.duration;
+        public DateTimeOffset finish { get => start + duration; }
     }
     public class PartitionSchedule
     {
         private IPartitionScheduleParameters _parameters;
-        private Random _r;
         private int _seed;
         public PartitionSchedule(IPartitionScheduleParameters parameters, int seed)
             => (_seed, _parameters) = (seed, parameters ?? throw new ArgumentNullException(nameof(parameters)));
-        public IEnumerable<(DateTimeOffset start, TimeSpan duration)> GetPartitions()
+        public IEnumerable<Partition> Partitions
         {
-            _r = new Random(_seed);
-            var lastPartitionEnd = _parameters.Start;
-            do
+            get
             {
-                var start = lastPartitionEnd + GetNextRandomTTFSpan();
+                var r = new Random(_seed);
+                var lastPartitionEnd = _parameters.Start;
+                do
+                {
+                    var ttf = GetNextRandomTTFSpan(r);
+                    var ttr = GetNextRandomTTRSpan(r);
 
-                var duration = GetNextRandomTTRSpan();
-                lastPartitionEnd = start + duration;
-                yield return (start, duration);
-            } while (true);
+                    yield return new Partition(lastPartitionEnd + ttf, ttr);
+
+                    lastPartitionEnd += ttf + ttr;
+
+                } while (true);
+            }
         }
-        private TimeSpan GetNextRandomTTFSpan()
+
+        private TimeSpan GetNextRandomTTFSpan(Random r)
         {
-            var d = _r.NextDouble();
+            var d = r.NextDouble();
             return -Math.Log(1 - d) * _parameters.MTTF;
         }
-        private TimeSpan GetNextRandomTTRSpan()
+        private TimeSpan GetNextRandomTTRSpan(Random r)
         {
-            return _parameters.MTTR + _parameters.TTRDispersion * NextGaussian();
+            return _parameters.MTTR + _parameters.TTRDispersion * NextGaussian(r);
         }
-        private double NextGaussian()
+        private static double NextGaussian(Random r)
         {
             double v1, s;
             do
             {
-                v1 = 2 * _r.NextDouble() - 1;
-                var v2 = 2 * _r.NextDouble() - 1;
+                v1 = 2 * r.NextDouble() - 1;
+                var v2 = 2 * r.NextDouble() - 1;
                 s = v1 * v1 + v2 * v2;
             } while (s >= 1 || s == 0);
             s = Math.Sqrt((-2 * Math.Log(s)) / s);

@@ -4,7 +4,8 @@ namespace Captain.Core
 {
     public interface ITransactionScheduler
     {
-        public abstract IEnumerable<TransferResult> Play(decimal initialBalance, IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule);
+        public string Name { get; }
+        public abstract IEnumerable<TransferResult> Play(IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule);
     }
 
 

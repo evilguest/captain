@@ -2,7 +2,7 @@
   "profiles": {
     "Captain.Main": {
       "commandName": "Project",
-      "commandLineArgs": "-f MovementListRisky.csv --mttf 7:00:00:00 --mttr 40:00:00 --ttrdispersion 4:00:00 --balance 14471.05 --iterations 1000"
+      "commandLineArgs": "-f MovementList2022RiskyPartial.csv --mttf 7:00:00:00 --mttr 40:00:00 --ttrdispersion 4:00:00 --iterations 1000 -o Results.csv --nodes 3 -l en-US"
     }
   }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-
+using Captain.Core;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 
-namespace Captain.Core
+namespace Captain
 {
     public class CsvRequestReader : IRequestReader
     {

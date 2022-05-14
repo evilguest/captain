@@ -17,7 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="movementList.csv">
+    <None Update="MovementList2022RiskyPartial.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="movementListANSI.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="movementListRisky.csv">
