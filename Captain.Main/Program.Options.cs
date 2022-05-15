@@ -27,9 +27,9 @@ namespace Captain.Main
 
             [Option]
             public DateTimeOffset Start { get; set; }
+            #endregion
             [Option]
             public int Seed { get; set; }
-            #endregion
             [Option('l', "language", Default ="ru-RU")]
             public string Language { get; set; }
             [Option('n', "nodes", Default = 2)]

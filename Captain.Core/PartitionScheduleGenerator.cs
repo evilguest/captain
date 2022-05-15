@@ -9,21 +9,20 @@ namespace Captain.Core
         public TimeSpan MTTR { get; }
         public TimeSpan TTRDispersion { get; }
         public DateTimeOffset Start { get; }
-        public int Seed { get; }
     }
     public class PartitionScheduleGenerator
     {
-        public PartitionScheduleGenerator(IPartitionScheduleParameters parameters) 
-            => _parameters = parameters
-                          ?? throw new ArgumentNullException(nameof(parameters));
-
         private readonly IPartitionScheduleParameters _parameters;
+        private readonly int _seed;
+        public PartitionScheduleGenerator(IPartitionScheduleParameters parameters, int seed)
+            => (_seed, _parameters) = (seed, parameters ?? throw new ArgumentNullException(nameof(parameters)));
+
 
         public IEnumerable<PartitionSchedule> Schedules
         {
             get
             {
-                var r = new Random(_parameters.Seed);
+                var r = new Random(_seed);
                 while(true)
                     yield return new PartitionSchedule(_parameters, r.Next()); 
             }

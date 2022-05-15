@@ -22,13 +22,6 @@ namespace Captain
         /// <param name="machine"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public override TransferResult ProcessPartitioned(int machine, TransferRequest request) 
-         => new TransferResult(request.Id)
-            {
-                TimeStamp = request.TimeStamp,
-                Amount = request.Amount,
-                //Balance = _balance,
-                Confirmed = false,
-            };
+        public override TransferResult ProcessPartitioned(int machine, TransferRequest request) => new TransferResult(request, false);
     }
 }

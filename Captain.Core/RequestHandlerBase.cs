@@ -27,13 +27,7 @@ namespace Captain
             if (confirmed)
                 _balance += request.Amount;
 
-            return new TransferResult(request.Id)
-            {
-                TimeStamp = request.TimeStamp,
-                Amount = request.Amount,
-                //Balance = _balance,
-                Confirmed = confirmed,
-            };
+            return new TransferResult(request, confirmed);
         }
 
         public virtual TransferResult ProcessPartitioned(int machine, TransferRequest request)
@@ -44,13 +38,7 @@ namespace Captain
             else
                 _nodeBalances[machine] = _nodeBalances[machine]; // do nothing;
 
-            return new TransferResult(request.Id)
-            {
-                TimeStamp = request.TimeStamp,
-                Amount = request.Amount,
-                //Balance = _nodeBalances[machine],
-                Confirmed = confirmed,
-            };
+            return new TransferResult(request, confirmed);
         }
 
         protected abstract decimal CollectBalances(decimal balance, decimal[] balances);

@@ -51,21 +51,20 @@ namespace Captain.Main
                 //Console.Read();
                 if (opts.Start == new DateTimeOffset())
                     opts.Start = history[0].TimeStamp;
-                var g = new PartitionScheduleGenerator(opts);
+                var g = new PartitionScheduleGenerator(opts, opts.Seed);
                 Console.WriteLine($"Running the pessimistic scheduler...");
-                var pessimistic = new TransactionScheduler(opts.Seed, opts.NodeCount, PessimisticHandler.Create);
-                var (c, a, na) = EstimateConsistencyAvailability(pessimistic, history, g, opts.Iterations, sw);
+                var (c, a, na) = EstimateConsistencyAvailability("Pessimistic", ()=>new PessimisticHandler(opts.Seed, opts.NodeCount), history, g, opts.Iterations, sw);
                 Console.WriteLine($"Pessimistic  : C = {c:p2}, A = {a:p2}, NA = {na:p2}");
                 Console.WriteLine($"Running the optimistic scheduler...");
-                (c, a, na) = EstimateConsistencyAvailability(new TransactionScheduler(opts.Seed, opts.NodeCount, OptimisticHandler.Create), history, g, opts.Iterations, sw);
+                (c, a, na) = EstimateConsistencyAvailability($"Optimistic ({opts.NodeCount})", ()=>new OptimisticHandler(opts.Seed, opts.NodeCount), history, g, opts.Iterations, sw);
                 Console.WriteLine($"Optimistic({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
 
                 Console.WriteLine($"Running the splitting scheduler...");
-                (c, a, na) = EstimateConsistencyAvailability(new TransactionScheduler(opts.Seed, opts.NodeCount, SplittingHandler.Create), history, g, opts.Iterations, sw);
+                (c, a, na) = EstimateConsistencyAvailability($"Splitting ({opts.NodeCount})", ()=>new SplittingHandler(opts.Seed, opts.NodeCount), history, g, opts.Iterations, sw);
                 Console.WriteLine($"Splitting({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
 
-                Console.WriteLine($"Running the quorum scheduler...");
-                (c, a, na) = EstimateConsistencyAvailability(new TransactionScheduler(opts.Seed, opts.NodeCount, MajorityHandler.Create), history, g, opts.Iterations, sw);
+                Console.WriteLine($"Running the majority scheduler...");
+                (c, a, na) = EstimateConsistencyAvailability($"Majority ({opts.NodeCount})", ()=> new MajorityHandler(opts.Seed, opts.NodeCount), history, g, opts.Iterations, sw);
                 Console.WriteLine($"Quorum({opts.NodeCount}): C = {c:p2}, A = {a:p2}, NA = {na:p2}");
 
                 return 0;

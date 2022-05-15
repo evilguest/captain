@@ -8,8 +8,7 @@ namespace Captain
 {
     public class OptimisticHandler: RequestHandlerBase
     {
-        private OptimisticHandler(int seed, int machineCount): base(seed, machineCount){}
-        public static OptimisticHandler Create(int seed, int machineCount) => new OptimisticHandler(seed, machineCount);
+        public OptimisticHandler(int seed, int machineCount): base(seed, machineCount){}
 
         protected override decimal CollectBalances(decimal balance, decimal[] balances) => balances.CollectDeltas(balance);
 

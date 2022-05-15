@@ -8,13 +8,9 @@ namespace Captain
 {
     public class SplittingHandler: RequestHandlerBase
     {
-        private SplittingHandler(int seed, int machineCount): base(seed, machineCount) {}
-
-        public static SplittingHandler Create(int seed, int machineCount) => new SplittingHandler(seed, machineCount);
-
+        public SplittingHandler(int seed, int machineCount): base(seed, machineCount) {}
         protected override decimal CollectBalances(decimal balance, decimal[] balances) 
             => balances.Sum();
-
         protected override void DistributeBalances(decimal balance, decimal[] balances) => balances.Distribute(balance);
     }
 }

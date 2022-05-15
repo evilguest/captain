@@ -6,10 +6,10 @@ namespace Captain.Core
 {
     public static class Evaluator
     {
-        public static (double C, double A, double NA) EstimateConsistencyAvailability(ITransactionScheduler scheduler, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations, IStatisticsWriter writer)
+        public static (double C, double A, double NA) EstimateConsistencyAvailability(string name, Func<IRequestHandler> factory, IEnumerable<TransferRequest> history, PartitionScheduleGenerator generator, int iterations, IStatisticsWriter writer)
         {
-            if (scheduler is null)
-                throw new ArgumentNullException(nameof(scheduler));
+            if (factory is null)
+                throw new ArgumentNullException(nameof(factory));
 
             if (history is null)
                 throw new ArgumentNullException(nameof(history));
@@ -38,19 +38,75 @@ namespace Captain.Core
                 if (++i > iterations)
                     break;
 
-                var r = scheduler.Play(history, partitionSchedule).ToList();
+                var r = Play(history, partitionSchedule, factory()).ToList();
                 double c = r.GetConsistency();
                 totalC += c;
                 double a = r.GetAvailability(reference);
                 totalA += a;
                 double p = partitionSchedule.Partitions.GetNetworkAvailability(history.First().TimeStamp, history.Last().TimeStamp);
                 totalP += p;
-                writer.WriteResult(new StatisticsItem(scheduler.Name, c, a, p));
+                writer.WriteResult(new StatisticsItem(name, c, a, p));
             }
             sw.Stop();
             Console.WriteLine($"We run {iterations} of {count} transactions each. Total time: {sw.ElapsedMilliseconds}ms, {1_000_000.0*sw.ElapsedMilliseconds / iterations / count} ns per iteration. ");
             //System.Console.ReadKey();
             return (totalC / iterations, totalA / iterations, totalP / iterations);
         }
+
+        public static IEnumerable<TransferResult> Play(IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule, IRequestHandler h)
+        {
+            if (requests is null)
+                throw new ArgumentNullException(nameof(requests));
+
+            if (partitionSchedule is null)
+                throw new ArgumentNullException(nameof(partitionSchedule));
+            return PlayImpl(requests, partitionSchedule, h);
+        }
+
+        private static IEnumerable<TransferResult> PlayImpl(IEnumerable<TransferRequest> requests, PartitionSchedule partitionSchedule, IRequestHandler h)
+        {
+            using var requestEnumerator = requests.GetEnumerator();
+            using var partitionEnumerator = partitionSchedule.Partitions.GetEnumerator();
+            if (!requestEnumerator.MoveNext())
+                yield break; // nothing to return
+            var request = requestEnumerator.Current;
+
+            while (partitionEnumerator.MoveNext())
+            {
+                while (request.TimeStamp < partitionEnumerator.Current.start) // no partition yet
+                {
+                    yield return h.ProcessRequest(request);
+                    if (!requestEnumerator.MoveNext())
+                        yield break; // done
+                    request = requestEnumerator.Current;
+                }
+
+                // distribute the balances across the nodes according to the sync policy
+                h.StartPartition();
+
+                while (request.TimeStamp < partitionEnumerator.Current.finish) // in partition
+                {
+
+                    yield return h.ProcessRequest(request);
+
+                    if (!requestEnumerator.MoveNext())
+                        yield break; // done
+                    request = requestEnumerator.Current;
+                }
+                // merge the balances back to the total one
+                h.FinishPartition();
+            }
+
+            while (requestEnumerator.MoveNext())
+            {
+                yield return h.ProcessRequest(request);
+
+                if (!requestEnumerator.MoveNext())
+                    yield break; // done
+                request = requestEnumerator.Current;
+            }
+
+        }
+
     }
 }

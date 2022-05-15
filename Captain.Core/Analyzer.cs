@@ -14,13 +14,7 @@ namespace Captain.Core
                 var confirm = (balance + r.Amount) >= 0;
                 if (confirm)
                     balance += r.Amount;
-                yield return new TransferResult(r.Id)
-                {
-                    TimeStamp = r.TimeStamp,
-                    Amount = r.Amount,
-                    //Balance = balance,
-                    Confirmed = confirm
-                };
+                yield return new TransferResult(r, confirm);
             }
         }
         public static IEnumerable<TransferResult> UltimateAcceptanceProcess(this IEnumerable<TransferRequest> requests)
@@ -29,12 +23,7 @@ namespace Captain.Core
             foreach (var r in requests)
             {
                 balance += r.Amount;
-                yield return new TransferResult(r.Id)
-                {
-                    TimeStamp = r.TimeStamp,
-                    Amount = r.Amount,
-                    Confirmed = true
-                };
+                yield return new TransferResult(r, true);
             }
         }
 
@@ -105,16 +94,16 @@ namespace Captain.Core
         {
             TimeSpan on = new TimeSpan();
             TimeSpan off = new TimeSpan();
-            var lastPartitionEnd = start;
+            var lastPartitionFinish = start;
             foreach (var partition in partitions)
             {
                 if (partition.start > end)
                     break;
-                on += (partition.start - lastPartitionEnd);
-                off += partition.duration;
-                lastPartitionEnd = partition.start + partition.duration;
+                on += (partition.start - lastPartitionFinish);
+                lastPartitionFinish = (partition.finish > end) ? end : partition.finish;
+                off += lastPartitionFinish - partition.start;
             }
-            on += (end - lastPartitionEnd);
+            on += (end - lastPartitionFinish);
             return on / (on + off);
         }
     }

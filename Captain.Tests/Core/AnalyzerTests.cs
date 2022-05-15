@@ -16,46 +16,24 @@ namespace Captain.Tests.Core
         [InlineData(23798)]
         public void TestSingleMachineProcess(int count)
         {
-            const decimal w = 10;
-            const decimal b = 42;
-            var t = DateTime.Now;
-            var request = new TransferRequest()
-            {
-                Amount = -w,
-                Id = "1",
-                TimeStamp = t,
-            };
-            var rs = Enumerable.Repeat(request, count).Prepend(new() { Amount=b, Id="0", TimeStamp=t});
+            var rs = TestHelper.GetTopupThenWithdrawals(count, 42m, 10m, TimeSpan.FromMinutes(10));
 
             var ts = Analyzer.SingleMachineProcess(rs).ToArray();
-            Assert.Equal(count+1, ts.Count());
+            Assert.Equal(count, ts.Count());
             //Assert.All(t, s => Assert.True(s.Balance >= 0));
-            Assert.All(ts.Take(1+(int)(b / w)), t => Assert.True(t.Confirmed));
-            Assert.All(ts.Skip(1+(int)(b / w)), t => Assert.False(t.Confirmed));
+            Assert.All(ts.Take(1 + (int)((decimal)42 / 10)), t => Assert.True(t.Confirmed));
+            Assert.All(ts.Skip(1 + (int)((decimal)42 / 10)), t => Assert.False(t.Confirmed));
         }
+
+
         [Fact]
         public void TestConsistency1()
         {
             var t = DateTime.Now;
             var results = new TransferResult[] {
-                new("1")
-                {
-                    Amount = 1,
-                    TimeStamp = t,
-                    Confirmed = true
-                },
-                new("2")
-                {
-                    Amount = -2,
-                    TimeStamp = t.AddHours(1),
-                    Confirmed = true
-                },
-                new("3")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = true
-                }
+                new("1", t, 1, true),
+                new("2", t.AddHours(1), -2, true),
+                new("3", t.AddHours(2), 1, true)
             };
             var c = Analyzer.GetConsistency(results);
             Assert.Equal(0.5, c);
@@ -65,25 +43,11 @@ namespace Captain.Tests.Core
         {
             var t = DateTime.Now;
             var results = new TransferResult[] {
-                new("1")
-                {
-                    Amount = 1,
-                    TimeStamp = t,
-                    Confirmed = true
-                },
-                new("2")
-                {
-                    Amount = -1,
-                    TimeStamp = t.AddHours(1),
-                    Confirmed = true
-                },
-                new("3")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = true
-                }
+                new("1", t, 1, true),
+                new("2", t.AddHours(1), -1, true),
+                new("3", t.AddHours(2), 1, true)
             };
+      
             var c = Analyzer.GetConsistency(results);
             Assert.Equal(1, c);
         }
@@ -92,24 +56,9 @@ namespace Captain.Tests.Core
         {
             var t = DateTime.Now;
             var results = new TransferResult[] {
-                new("1")
-                {
-                    Amount = 1,
-                    TimeStamp = t,
-                    Confirmed = true
-                },
-                new("2")
-                {
-                    Amount = -2,
-                    TimeStamp = t.AddHours(1),
-                    Confirmed = false
-                },
-                new("3")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = true
-                }
+                new("1", t, 1, true),
+                new("2", t.AddHours(1), -2, false),
+                new("3", t.AddHours(2), 1, true)
             };
             var c = Analyzer.GetConsistency(results);
             Assert.Equal(1, c);
@@ -117,12 +66,7 @@ namespace Captain.Tests.Core
             [Fact]
         public void TestUltimateAcceptance()
         {
-            var request = new TransferRequest()
-            {
-                Amount = -1,
-                Id = "1",
-                TimeStamp = DateTime.Now,
-            };
+            var request = new TransferRequest("1", DateTimeOffset.Now, -1);
             var rs = Enumerable.Repeat(request, 42);
             var ts = Analyzer.UltimateAcceptanceProcess(rs);
             Assert.Equal(rs.Count(), ts.Count());
@@ -134,84 +78,23 @@ namespace Captain.Tests.Core
         {
             var t = DateTime.Now;
             var rs = new TransferResult[] {
-                new("1")
-                {
-                    Amount = 1,
-                    TimeStamp = t,
-                    Confirmed = true
-                },
-                new("2")
-                {
-                    Amount = -2,
-                    TimeStamp = t.AddHours(1),
-                    Confirmed = false
-                },
-                new("3")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = true
-                },
-                new("4")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(3),
-                    Confirmed = false
-                }
-
+                new("1", t, 1, true),
+                new("2", t.AddHours(1), -2, false),
+                new("3", t.AddHours(2), 1, true),
+                new("4", t.AddHours(3), 1, false)
             };
             var rs1 = new TransferResult[] {
-                new("1")
-                {
-                    Amount = 1,
-                    TimeStamp = t,
-                    Confirmed = true
-                },
-                new("1")
-                {
-                    Amount = -2,
-                    TimeStamp = t.AddHours(1),
-                    Confirmed = false
-                },
-                new("3")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = true
-                },
-                new("4")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = false
-                }
+                new("1", t, 1, true),
+                new("1", t.AddHours(1), -2, false),
+                new("3", t.AddHours(2), 1, true),
+                new("4", t.AddHours(2), 1, false)
             };
             Assert.Throws<InvalidOperationException>(() => Analyzer.GetAvailability(rs1, rs));
             var rs2 = new TransferResult[] {
-                new("1")
-                {
-                    Amount = 1,
-                    TimeStamp = t,
-                    Confirmed = true
-                },
-                new("2")
-                {
-                    Amount = -2,
-                    TimeStamp = t.AddHours(1),
-                    Confirmed = true
-                },
-                new("3")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = false
-                },
-                new("4")
-                {
-                    Amount = 1,
-                    TimeStamp = t.AddHours(2),
-                    Confirmed = false
-                }
+                new("1", t, 1, true),
+                new("2", t.AddHours(1), -2, false),
+                new("3", t.AddHours(2), 1, false),
+                new("4", t.AddHours(2), 1, false)
             };
             Assert.Equal(0.5, Analyzer.GetAvailability(rs2, rs));
 
@@ -222,7 +105,7 @@ namespace Captain.Tests.Core
             var start = DateTime.Now;
             var ps = new Partition[] {
                 new (start.AddHours(1), TimeSpan.FromHours(12)),
-                new (start.AddHours(25), TimeSpan.FromHours(24)),
+                new (start.AddDays(2), TimeSpan.FromHours(36)),
                 new (start.AddDays(5), TimeSpan.FromDays(100))
             };
             Assert.Equal(0.5, Analyzer.GetNetworkAvailability(ps, start, start.AddDays(3)));
