@@ -26,5 +26,12 @@ namespace Captain
         public static decimal CollectDeltas(this IEnumerable<decimal> balances, decimal initialBalance) =>
             balances.Sum() - initialBalance * (balances.Count() - 1);
         public static decimal Collect(this IEnumerable<decimal> balances) => balances.Sum();
+        public static bool CanAdd(this ref decimal balance, decimal delta)
+        {
+            var confirm = (balance + delta) >= 0;
+            if (confirm)
+                balance += delta;
+            return confirm;
+        }
     }
 }

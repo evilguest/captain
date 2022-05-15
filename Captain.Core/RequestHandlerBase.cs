@@ -21,32 +21,18 @@ namespace Captain
             _nodeBalances = new decimal[machineCount];
         }
 
-        public virtual TransferResult ProcessNormal(int machine, TransferRequest request)
-        {
-            var confirmed = (_balance + request.Amount >= 0);
-            if (confirmed)
-                _balance += request.Amount;
+        public virtual TransferResult ProcessNormal(int machine, TransferRequest request) 
+            => new TransferResult(request, _balance.CanAdd(request.Amount));
 
-            return new TransferResult(request, confirmed);
-        }
-
-        public virtual TransferResult ProcessPartitioned(int machine, TransferRequest request)
-        {
-            var confirmed = (_nodeBalances[machine] + request.Amount >= 0);
-            if (confirmed)
-                _nodeBalances[machine] += request.Amount;
-            else
-                _nodeBalances[machine] = _nodeBalances[machine]; // do nothing;
-
-            return new TransferResult(request, confirmed);
-        }
+        public virtual TransferResult ProcessPartitioned(int machine, TransferRequest request) 
+            => new TransferResult(request, _nodeBalances[machine].CanAdd(request.Amount));
 
         protected abstract decimal CollectBalances(decimal balance, decimal[] balances);
 
         protected abstract void DistributeBalances(decimal balance, decimal[] balances);
 
 
-        #region ITransactionHandler
+        #region IRequestHandler
         private TransferResult ProcessRequest(int machine, TransferRequest request) =>
             _partitioned
                 ? ProcessPartitioned(machine, request)

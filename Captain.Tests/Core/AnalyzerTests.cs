@@ -11,7 +11,6 @@ namespace Captain.Tests.Core
     public class AnalyzerTests
     {
         [Theory]
-        [InlineData(0)]
         [InlineData(1)]
         [InlineData(23798)]
         public void TestSingleMachineProcess(int count)
@@ -21,8 +20,8 @@ namespace Captain.Tests.Core
             var ts = Analyzer.SingleMachineProcess(rs).ToArray();
             Assert.Equal(count, ts.Count());
             //Assert.All(t, s => Assert.True(s.Balance >= 0));
-            Assert.All(ts.Take(1 + (int)((decimal)42 / 10)), t => Assert.True(t.Confirmed));
-            Assert.All(ts.Skip(1 + (int)((decimal)42 / 10)), t => Assert.False(t.Confirmed));
+            Assert.All(ts.Take(1 + (int)((decimal)42 / 10)), t => Assert.True(t.Approved));
+            Assert.All(ts.Skip(1 + (int)((decimal)42 / 10)), t => Assert.False(t.Approved));
         }
 
 
@@ -70,7 +69,7 @@ namespace Captain.Tests.Core
             var rs = Enumerable.Repeat(request, 42);
             var ts = Analyzer.UltimateAcceptanceProcess(rs);
             Assert.Equal(rs.Count(), ts.Count());
-            Assert.All(ts, t => Assert.True(t.Confirmed));
+            Assert.All(ts, t => Assert.True(t.Approved));
         }
 
         [Fact]

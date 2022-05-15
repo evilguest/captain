@@ -1,9 +1,12 @@
-﻿namespace Captain
+﻿using Captain.Core;
+namespace Captain
 {
     public class QuorumHandler : RequestHandlerBase
     {
         private int _quorumMap;
         private readonly int _quorumSize;
+        private readonly decimal[] _partBalances = new decimal[2];
+
         public QuorumHandler(int seed, int machineCount, int quorumSize) : base(seed, machineCount)
         {
             if (machineCount > 30)
@@ -20,15 +23,23 @@
 
         public override void StartPartition()
         {
-            base.StartPartition(); // actually base doesn't do much, but out of respect we're still calling it
+            base.StartPartition();
 
             // now we need to build the partition map.
             // Idea: we generate a random nonnegative number that has only the _machineCount bits possibly set.
             // Since _machineCount does never exceed 30, we can safely calculate 2^machineCount which will not exceed 1073741824, representable as both int and uint.
 
-            _quorumMap = _random.Next(1 << _machineCount);
+            while (_quorumMap == 0) // we need to make sure there are two parts in the cluster!
+                _quorumMap = _random.Next(1 << _machineCount);
+            _partBalances.Equalize(_balance);
         }
-
+        public override void FinishPartition()
+        {
+            var b = _balance;
+            base.FinishPartition();
+            _balance = CollectBalances(b, _partBalances);
+            _quorumMap = 0;
+        }
         // we need to calculate whether the node belongs to a large enough group.
         public bool IsNodeInQuorum(int machine) => CountSimilarMachines(machine) >= _quorumSize;
 
@@ -58,6 +69,13 @@
                 x &= x - 1; // clear the least significant bit set
             return c;
         }
+        public override TransferResult ProcessPartitioned(int machine, TransferRequest request)
+            => IsNodeInQuorum(machine)
+                ? ProcessPartitionedInQuorum(NodePart(machine), request)
+                : request.Reject();
 
+        private TransferResult ProcessPartitionedInQuorum(ClusterPart clusterPart, TransferRequest request)
+            => new(request, _partBalances[(int)clusterPart].CanAdd(request.Amount));
+        
     }
 }

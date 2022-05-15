@@ -10,12 +10,7 @@ namespace Captain.Core
         {
             var balance = 0m;
             foreach(var r in requests)
-            {
-                var confirm = (balance + r.Amount) >= 0;
-                if (confirm)
-                    balance += r.Amount;
-                yield return new TransferResult(r, confirm);
-            }
+                yield return new TransferResult(r, balance.CanAdd(r.Amount));
         }
         public static IEnumerable<TransferResult> UltimateAcceptanceProcess(this IEnumerable<TransferRequest> requests)
         {
@@ -23,7 +18,7 @@ namespace Captain.Core
             foreach (var r in requests)
             {
                 balance += r.Amount;
-                yield return new TransferResult(r, true);
+                yield return r.Approve();
             }
         }
 
@@ -33,7 +28,7 @@ namespace Captain.Core
             var negative = new TimeSpan();
             var balance = 0m;
             // we need to count share of the time account was negative
-            foreach(var s in results.Zip(results.Skip(1), (r1, r2)=>(Duration: r2.TimeStamp-r1.TimeStamp, Balance: balance+=r1.Confirmed?r1.Amount:0)))
+            foreach(var s in results.Zip(results.Skip(1), (r1, r2)=>(Duration: r2.TimeStamp-r1.TimeStamp, Balance: balance+=r1.Approved?r1.Amount:0)))
             {
                 if (s.Balance >= 0)
                     positive += s.Duration;
@@ -52,9 +47,9 @@ namespace Captain.Core
                 if (rr.First.Id != rr.Second.Id)
                     throw new InvalidOperationException($"Mismatch between results sequence, {rr.First.Id} != {rr.Second.Id}");
 
-                if (rr.First.Confirmed)
+                if (rr.First.Approved)
                 {
-                    if (rr.Second.Confirmed)
+                    if (rr.Second.Approved)
                         accepted++;
                     else
                         // oops! Inconsistency!!!
@@ -62,7 +57,7 @@ namespace Captain.Core
                 }
                 else
                 {
-                    if (rr.Second.Confirmed)
+                    if (rr.Second.Approved)
                         rejected++;
                 }
             }

@@ -2,9 +2,8 @@
 
 namespace Captain.Core
 {
-    public record TransferResult(string Id, DateTimeOffset TimeStamp, decimal Amount, bool Confirmed) : TransferRequest(Id, TimeStamp, Amount)
+    public record TransferResult(string Id, DateTimeOffset TimeStamp, decimal Amount, bool Approved)
     {
-        //public TransferResult(string id) => Id = id;
-        public TransferResult(TransferRequest r, bool confirmed) : this(r.Id, r.TimeStamp, r.Amount, confirmed) { }
+        public TransferResult(TransferRequest r, bool approved) : this(r.Id, r.TimeStamp, r.Amount, approved) { }
     }
 }

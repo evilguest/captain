@@ -44,7 +44,7 @@ namespace Captain.Main
                 //Console.Read();
                 Console.WriteLine("Checking the single-machine processor consistency...");
                 var singleMachineHistory = history.SingleMachineProcess();
-                Console.WriteLine($"Operations balance {singleMachineHistory.Sum(e => e.Amount)}; final balance {singleMachineHistory.Where(r => r.Confirmed).Sum(e => e.Amount)}");
+                Console.WriteLine($"Operations balance {singleMachineHistory.Sum(e => e.Amount)}; final balance {singleMachineHistory.Where(r => r.Approved).Sum(e => e.Amount)}");
                 var lowestConsistencyHistory = history.UltimateAcceptanceProcess();
                 Console.WriteLine($"Lowest consistency is {lowestConsistencyHistory.GetConsistency():p2}"); 
 
