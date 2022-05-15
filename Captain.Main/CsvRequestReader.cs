@@ -21,8 +21,8 @@ namespace Captain
             //public string AccountNo { get; set; }
             [Name("Референс проводки")]
             public string ReferenceNo { get; set; }
-            [Name("Описание операции")]
-            public string Comment { get; set; }
+            //[Name("Описание операции")]
+            //public string Comment { get; set; }
             [Name("Приход")]
             public decimal Charge { get; set; }
             [Name("Расход")]
