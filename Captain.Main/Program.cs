@@ -93,7 +93,7 @@ namespace Captain.Main
                 for (int i = 3; i <= opts.NodeCount; i++)
                 {
                     Console.WriteLine($"Running the majority scheduler...");
-                    var (c, a, na) = EstimateConsistencyAvailability($"Majority ({i})", () => new MajorityHandler(opts.Seed, i), history, g, opts.Iterations, sw);
+                    var (c, a, na) = EstimateConsistencyAvailability($"Majority ({i})", () => QuorumHandler.CreateMajorityHandler(opts.Seed, i), history, g, opts.Iterations, sw);
                     Console.WriteLine($"Majority ({i}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
                 }
 

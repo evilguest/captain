@@ -7,7 +7,9 @@ namespace Captain
         private readonly int _quorumSize;
         private readonly decimal[] _partBalances = new decimal[2];
 
-        public QuorumHandler(int seed, int machineCount, int quorumSize) : base(seed, machineCount)
+        public static QuorumHandler Create(int seed, int machineCount, int quorumSize) => new QuorumHandler(seed, machineCount, quorumSize);
+        public static QuorumHandler CreateMajorityHandler(int seed, int machineCount) => new QuorumHandler(seed, machineCount, machineCount / 2 + 1);
+        private QuorumHandler(int seed, int machineCount, int quorumSize) : base(seed, machineCount)
         {
             if (machineCount > 30)
                 throw new ArgumentOutOfRangeException(nameof(machineCount), machineCount, $"{nameof(machineCount)} higher than 30 is not supported");
@@ -29,9 +31,8 @@ namespace Captain
             // Idea: we generate a random nonnegative number that has only the _machineCount bits possibly set.
             // Since _machineCount does never exceed 30, we can safely calculate 2^machineCount which will not exceed 1073741824, representable as both int and uint.
 
-            while (_quorumMap == 0) // we need to make sure there are two parts in the cluster!
-                _quorumMap = _random.Next(1 << _machineCount);
-            _partBalances.Equalize(_balance);
+            _quorumMap = 1 + _random.Next((1 << _machineCount) - 1); // generating an uniformly distributed number in the range [1..2^N-1]
+            _partBalances.Equalize(_balance); // ensure both parts of the cluster get the same balance
         }
         public override void FinishPartition()
         {
