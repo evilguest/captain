@@ -19,7 +19,7 @@ namespace Captain.Main
         }
 
         private string GetFileName(string resultFileName) 
-            => $"{Path.GetFileNameWithoutExtension(resultFileName)}{DateTime.Now:yyyy-MM-dd.hh.mm.ss}.csv";
+            => $"{Path.GetFileNameWithoutExtension(resultFileName)}{DateTime.Now:yyyy-MM-dd.HH.mm.ss}.csv";
 
         public void WriteResult(StatisticsItem item)
         {
