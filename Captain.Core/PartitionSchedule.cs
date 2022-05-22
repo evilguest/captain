@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics.Distributions;
+using System;
 using System.Collections.Generic;
 
 namespace Captain.Core
@@ -18,11 +19,12 @@ namespace Captain.Core
             get
             {
                 var r = new Random(_seed);
+                var logNormal = LogNormal.WithMeanVariance(_parameters.MTTR.TotalSeconds, _parameters.TTRDispersion.TotalSeconds, r);
                 var lastPartitionEnd = _parameters.Start;
                 do
                 {
                     var ttf = GetNextRandomTTFSpan(r);
-                    var ttr = GetNextRandomTTRSpan(r);
+                    var ttr = TimeSpan.FromSeconds(logNormal.Sample());
 
                     yield return new Partition(lastPartitionEnd + ttf, ttr);
 
@@ -32,27 +34,7 @@ namespace Captain.Core
             }
         }
 
-        private TimeSpan GetNextRandomTTFSpan(Random r)
-        {
-            var d = r.NextDouble();
-            return -Math.Log(1 - d) * _parameters.MTTF;
-        }
-        private TimeSpan GetNextRandomTTRSpan(Random r)
-        {
-            return _parameters.MTTR + _parameters.TTRDispersion * NextGaussian(r);
-        }
-        private static double NextGaussian(Random r)
-        {
-            double v1, s;
-            do
-            {
-                v1 = 2 * r.NextDouble() - 1;
-                var v2 = 2 * r.NextDouble() - 1;
-                s = v1 * v1 + v2 * v2;
-            } while (s >= 1 || s == 0);
-            s = Math.Sqrt((-2 * Math.Log(s)) / s);
-
-            return v1 * s;
-        }
+        private TimeSpan GetNextRandomTTFSpan(Random r) 
+            => TimeSpan.FromSeconds(Exponential.Sample(r, 1.0 / _parameters.MTTF.TotalSeconds));
     }
 }

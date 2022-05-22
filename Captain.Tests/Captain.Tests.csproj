@@ -29,7 +29,6 @@
     <ProjectReference Include="..\Captain.Main\Captain.Main.csproj" />
     <ProjectReference Include="..\Captain.Quorum\Captain.Quorum.csproj" />
     <ProjectReference Include="..\Captain.Optimistic\Captain.Optimistic.csproj" />
-    <ProjectReference Include="..\Captain.Pessimistic\Captain.Pessimistic.csproj" />
   </ItemGroup>
 
 </Project>

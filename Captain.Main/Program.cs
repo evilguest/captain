@@ -48,7 +48,7 @@ namespace Captain.Main
             var requests = (from r in new CsvRequestReader().Read(opts.RequestsFileName, opts.Language)
                            select r).Reverse().ToList();//.OrderBy(r => r.TimeStamp);
             Console.WriteLine($"Succesfully loaded file {opts.RequestsFileName}");
-            Console.WriteLine($"{requests.Count()} entries found");
+            Console.WriteLine($"{requests.Count} entries found");
             Console.WriteLine($"First entry {requests.First().TimeStamp}, last entry {requests.Last().TimeStamp}. ");
             //HandleHistory(opts, requests);
             Console.WriteLine("Now we're going to add some more risky transactions");
@@ -83,26 +83,26 @@ namespace Captain.Main
                 //(c, a, na) = EstimateConsistencyAvailability($"Optimistic ({opts.NodeCount})", () => new OptimisticHandler(opts.Seed, opts.NodeCount), history, g, opts.Iterations, sw);
                 //Console.WriteLine($"Optimistic({opts.NodeCount}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
 
-                for (int i = 2; i <= opts.NodeCount; i++)
-                {
-                    Console.WriteLine($"Running the splitting scheduler...");
-                    var (c, a, na) = EstimateConsistencyAvailability($"Splitting ({i})", () => new SplittingHandler(opts.Seed, i), history, g, opts.Iterations, sw);
-                    Console.WriteLine($"Splitting({i}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
-                }
-
-                for (int i = 3; i <= opts.NodeCount; i++)
-                {
-                    Console.WriteLine($"Running the majority scheduler...");
-                    var (c, a, na) = EstimateConsistencyAvailability($"Majority ({i})", () => QuorumHandler.CreateMajorityHandler(opts.Seed, i), history, g, opts.Iterations, sw);
-                    Console.WriteLine($"Majority ({i}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
-                }
-
-                //for (int i = 1; i <= opts.NodeCount; i++)
+                //for (int i = 2; i <= opts.NodeCount; i++)
                 //{
-                //    Console.WriteLine($"Running the quorum scheduler...");
-                //    var (c, a, na) = EstimateConsistencyAvailability($"Quorum({i}/{opts.NodeCount})", () => new QuorumHandler(opts.Seed, opts.NodeCount, i), history, g, opts.Iterations, sw);
-                //    Console.WriteLine($"Quorum ({i}/{opts.NodeCount}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
+                //    Console.WriteLine($"Running the splitting scheduler...");
+                //    var (c, a, na) = EstimateConsistencyAvailability($"Splitting ({i})", () => new SplittingHandler(opts.Seed, i), history, g, opts.Iterations, sw);
+                //    Console.WriteLine($"Splitting({i}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
                 //}
+
+                //for (int i = 3; i <= opts.NodeCount; i++)
+                //{
+                //    Console.WriteLine($"Running the majority scheduler...");
+                //    var (c, a, na) = EstimateConsistencyAvailability($"Majority ({i})", () => QuorumHandler.CreateMajorityHandler(opts.Seed, i), history, g, opts.Iterations, sw);
+                //    Console.WriteLine($"Majority ({i}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
+                //}
+
+                for (int i = 1; i <= opts.NodeCount; i++)
+                {
+                    Console.WriteLine($"Running the quorum scheduler...");
+                    var (c, a, na) = EstimateConsistencyAvailability($"Quorum({i}/{opts.NodeCount})", () => QuorumHandler.Create(opts.Seed, opts.NodeCount, i), history, g, opts.Iterations, sw);
+                    Console.WriteLine($"Quorum ({i}/{opts.NodeCount}): C = {c:p2}, A = {a:p2}, P = {na:p2}");
+                }
 
             }
 

@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Captain.Core\Captain.Core.csproj" />
-    <ProjectReference Include="..\Captain.Pessimistic\Captain.Pessimistic.csproj" />
   </ItemGroup>
 
 </Project>
